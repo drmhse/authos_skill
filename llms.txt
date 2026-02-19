@@ -1,0 +1,14 @@
+# AuthOS Skills (authos.dev)
+
+## Skills
+
+- [Platform Deployment](authos-platform-deployment/SKILL.md): Deploy and configure the core AuthOS infrastructure.
+- [Tenancy Governance](authos-tenancy-governance/SKILL.md): Manage the lifecycle of organizations and administrative users.
+- [Platform Maintenance](authos-platform-maintenance/SKILL.md): Monitor and maintain platform health and security.
+- [Identity Configuration](authos-identity-configuration/SKILL.md): Configure Bring Your Own OAuth (BYOO) and Enterprise SSO.
+- [Service Management](authos-service-management/SKILL.md): Architect and manage services within an AuthOS organization.
+- [RBAC Control](authos-rbac-control/SKILL.md): Implement granular access control and team management.
+- [Web Integration](authos-web-integration/SKILL.md): Integrate the "Invisible SDK" into web applications.
+- [Device Flow](authos-device-flow/SKILL.md): Implement Device Authorization Flow (RFC 8628) for CLIs and IoT devices.
+- [Webhook Integration](authos-webhook-integration/SKILL.md): Implement real-time event notifications via Enterprise Webhooks.
+- [Compliance Automation](authos-compliance-automation/SKILL.md): Automate data privacy and compliance workflows.

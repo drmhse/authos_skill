@@ -48,8 +48,7 @@ Invite new users to your organization via email.
   ```json
   {
     "email": "colleague@company.com",
-    "role": "member",
-    "service_slugs": ["main-app"]
+    "role": "member"
   }
   ```
 - **Process**: The user receives an email with a unique token. Once they accept, they are added to the organization with the specified role.

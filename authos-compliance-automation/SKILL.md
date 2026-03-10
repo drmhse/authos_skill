@@ -18,7 +18,7 @@ Fo SOC2 and security monitoring, you can stream all platform and organization ev
 - **Custom**: Any HTTP endpoint that accepts JSON.
 
 ### Configuration
-1. **Endpoint**: `POST /api/platform/siem-config` (Platform Owner) or `POST /api/organizations/:org_slug/siem-config` (Organization Owner).
+1. **Endpoint**: `POST /api/organizations/:org_slug/siem-configs` (Organization Owner).
 2. **Body**:
    ```json
    {
@@ -35,7 +35,7 @@ Fo SOC2 and security monitoring, you can stream all platform and organization ev
 
 AuthOS provides a single endpoint to export all data associated with a specific user identity across all services.
 
-- **Export Data**: `GET /api/organizations/:org_slug/users/:user_id/export`
+- **Export Data**: `GET /api/privacy/export/:user_id`
 - **Output**: A comprehensive JSON file containing:
   - Profile information.
   - Authentication history (Login events).
@@ -45,7 +45,7 @@ AuthOS provides a single endpoint to export all data associated with a specific 
 ## 3. Right to be Forgotten (Anonymization)
 
 Instead of hard-deleting records (which breaks audit logs), AuthOS supports **Anonymization**.
-- **Endpoint**: `POST /api/organizations/:org_slug/users/:user_id/anonymize`
+- **Endpoint**: `DELETE /api/privacy/forget/:user_id`
 - **Action**: 
   - Redacts `email`, `name`, and `ip_address` from all tables.
   - Replaces them with static strings (e.g., `ANONYMIZED_USER`).

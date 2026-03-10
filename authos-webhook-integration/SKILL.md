@@ -26,7 +26,7 @@ You can configure webhooks via the Organization Settings API.
   {
     "url": "https://your-api.com/webhooks/authos",
     "events": ["user.signup.success", "user.login.success"],
-    "description": "Production sync webhook"
+    "name": "Production sync webhook"
   }
   ```
 - **Response**: returns a `secret`. **Save this secret** to verify incoming requests.

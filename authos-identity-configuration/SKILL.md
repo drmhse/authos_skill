@@ -57,8 +57,7 @@ Customize the look and feel of the login pages hosted by AuthOS for your organiz
   ```json
   {
     "logo_url": "https://cdn.yourdomain.com/logo.png",
-    "primary_color": "#4F46E5",
-    "font_family": "Inter, sans-serif"
+    "primary_color": "#4F46E5"
   }
   ```
 
@@ -71,6 +70,7 @@ AuthOS can act as a SAML Identity Provider, allowing your users to log into othe
 - **Body**:
   ```json
   {
+    "enabled": true,
     "entity_id": "https://sp.enterprise-app.com",
     "acs_url": "https://sp.enterprise-app.com/saml/acs",
     "slo_url": "https://sp.enterprise-app.com/saml/slo",

@@ -19,7 +19,7 @@ The Device Authorization Grant is used by applications that have no browser or a
 
 ### Step 1: Request Device Code
 The device calls the API to initialize the flow.
-- **Endpoint**: `POST /api/auth/device/code`
+- **Endpoint**: `POST /auth/device/code`
 - **Body**:
   ```json
   {
@@ -41,11 +41,11 @@ The device calls the API to initialize the flow.
 
 ### Step 2: User Authorization
 The user must visit the `verification_uri` and enter the `user_code`.
-- **Frontend Action**: Your activation page should call `POST /api/auth/device/verify` with the `user_code` to show the correct login options (e.g., "Login with Google", "Login with GitHub").
+- **Frontend Action**: Your activation page should call `POST /auth/device/verify` with the `user_code` to show the correct login options (e.g., "Login with Google", "Login with GitHub").
 
 ### Step 3: Polling for Tokens
 The device polls the token endpoint.
-- **Endpoint**: `POST /api/auth/device/token`
+- **Endpoint**: `POST /auth/token`
 - **Body**:
   ```json
   {

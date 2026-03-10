@@ -62,7 +62,7 @@ For `api` type services, you can generate long-lived API keys instead of using t
 
 - **List Keys**: `GET /api/organizations/:org_slug/services/:service_slug/api-keys`
 - **Create Key**: `POST /api/organizations/:org_slug/services/:service_slug/api-keys`
-  - Body: `{"name": "Internal Scraper"}`
+  - Body: `{"name": "Internal Scraper", "permissions": ["service:read"]}`
 
 ## 5. Usage and Limits
 

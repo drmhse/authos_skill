@@ -22,6 +22,7 @@ AuthOS is a powerful, multi-tenant authentication platform. This repository prov
 
 ### Integration & Development
 - **[Web Integration](./authos-web-integration/SKILL.md)**: Frontend integration via the "Invisible SDK" with auto-token rotation.
+- **[Backend Integration](./authos-backend-integration/SKILL.md)**: Secure backend APIs by validating JWTs using JWKS and Node.js middleware.
 - **[Device Flow](./authos-device-flow/SKILL.md)**: Input-constrained authentication (RFC 8628) for CLIs and IoT devices.
 - **[Webhook Integration](./authos-webhook-integration/SKILL.md)**: Real-time event sync with HMAC signature verification.
 - **[Compliance Automation](./authos-compliance-automation/SKILL.md)**: GDPR/SOC2 readiness, data exports, and SIEM streaming.

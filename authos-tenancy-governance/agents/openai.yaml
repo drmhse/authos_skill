@@ -1,0 +1,4 @@
+interface:
+  display_name: "AuthOS Tenancy Governance"
+  short_description: "Govern tenants, tiers, owners, and audits"
+  default_prompt: "Use $authos-tenancy-governance to review AuthOS tenant lifecycle controls."

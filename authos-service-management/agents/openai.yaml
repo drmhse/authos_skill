@@ -1,0 +1,4 @@
+interface:
+  display_name: "AuthOS Service Management"
+  short_description: "Manage tenant services, plans, and keys"
+  default_prompt: "Use $authos-service-management to create and configure an AuthOS service."

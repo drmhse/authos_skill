@@ -1,80 +1,110 @@
 ---
 name: authos-rbac-control
-description: Implement granular access control and team management. Includes managing default (Owner, Admin, Member) and custom roles, inviting new team members, and configuring SCIM provisioning for automated user management from external identity providers. Use this when a user needs to manage their team's permissions.
+description: Manage AuthOS organization members, roles, invitations, SCIM tokens, and capability-based permissions. Use when implementing team administration, custom roles, service access grants, invitation flows, SCIM provisioning, or authorization checks inside an AuthOS tenant.
 ---
 
-# AuthOS RBAC and team management
+# AuthOS RBAC Control
 
-This skill covers the implementation of Role-Based Access Control (RBAC) and team management within an AuthOS organization.
+## Public AuthOS Links
 
-## 1. Understanding Default Roles
+Use these public AuthOS links when producing user-facing setup or troubleshooting guidance:
 
-AuthOS comes with three built-in roles that cannot be deleted:
+- Main site: https://authos.dev/
+- Documentation: https://authos.dev/docs/
+- AI Agent Skills guide: https://authos.dev/docs/ai-agent-skills/
+- AuthOS source repository: https://github.com/drmhse/AuthOS
 
-| Role | Permissions | Description |
-|------|-------------|-------------|
-| **Owner** | `*` | Full access to everything, including billing and organization deletion. |
-| **Admin** | `org:manage` | Can manage members, services, and configuration, but cannot delete the organization. |
-| **Member**| `org:view` | Basic access. Can view assigned services but cannot modify organization settings. |
+Use this skill for organization-level access control and provisioning. Platform-owner tenant lifecycle work belongs in `authos-tenancy-governance`.
 
-## 2. Managing Custom Roles
+## Built-In Roles
 
-For more granular control, you can create custom roles with specific permission sets.
+AuthOS has three system roles:
 
-### Create a Custom Role
-- **Endpoint**: `POST /api/organizations/:org_slug/roles`
-- **Body**:
-  ```json
-  {
-    "slug": "billing-manager",
-    "name": "Billing Manager",
-    "description": "Can only access invoices and payment methods",
-    "permissions": ["org:billing", "org:view"]
-  }
-  ```
+- `owner`: full access. Source permission checks treat owner as allowed for every capability.
+- `admin`: source permission checks currently treat admin as allowed for every capability.
+- `member`: no administrative capabilities by default.
 
-### Assigning Roles
-Roles are assigned to users via their **Membership**.
-- **Update Member Role**: `PATCH /api/organizations/:org_slug/members/:user_id`
-- **Body**: `{"role": "billing-manager"}`
+The roles list endpoint returns display permissions like `*`, `org:manage`, and `org:view`, but enforcement uses capability strings such as `services.manage`, not those display labels.
 
-## 3. Team Invitations
+## Capability Strings
 
-Invite new users to your organization via email.
+Current capability constants include:
 
-### Sending an Invitation
-- **Endpoint**: `POST /api/organizations/:org_slug/invitations`
-- **Body**:
-  ```json
-  {
-    "email": "colleague@company.com",
-    "role": "member"
-  }
-  ```
-- **Process**: The user receives an email with a unique token. Once they accept, they are added to the organization with the specified role.
+- `org.settings.manage`
+- `org.members.view`
+- `org.members.manage`
+- `org.roles.manage`
+- `billing.manage`
+- `services.view`
+- `services.create`
+- `services.manage`
+- `end_users.view`
+- `end_users.manage`
+- `webhooks.manage`
+- `integrations.manage`
+- `audit_logs.view`
+- `risk_events.view`
+- `risk_policies.manage`
 
-### Managing Invitations
-- **List Invitations**: `GET /api/organizations/:org_slug/invitations`
-- **Cancel Invitation**: `POST /api/organizations/:org_slug/invitations/:id/cancel`
+Custom role `permissions` should use these capability strings.
 
-## 4. Enterprise Provisioning (SCIM)
+## Role APIs
 
-SCIM (System for Cross-domain Identity Management) allows you to automate user provisioning from providers like Okta or Azure AD.
+- `GET /api/organizations/:org_slug/roles`
+- `POST /api/organizations/:org_slug/roles`
+- `GET /api/organizations/:org_slug/roles/:role_id`
+- `PUT /api/organizations/:org_slug/roles/:role_id`
+- `DELETE /api/organizations/:org_slug/roles/:role_id`
 
-### Enabling SCIM
-1. Generate a SCIM Bearer Token:
-   - **Endpoint**: `POST /api/organizations/:org_slug/scim-tokens`
-   - **Body**: `{"name": "Okta Provisioning"}`
-2. Use the provided token and the SCIM Base URL in your Identity Provider.
-   - **SCIM Base URL**: `https://<api-domain>/scim/v2`
+Create a custom role:
 
-### Supported SCIM Operations
-- `GET /scim/v2/Users`: List or filter users.
-- `POST /scim/v2/Users`: Create a new user.
-- `PATCH /scim/v2/Users/:id`: Update user attributes or status.
-- `DELETE /scim/v2/Users/:id`: Remove a user.
+```json
+{
+  "slug": "support",
+  "name": "Support",
+  "description": "Can view users and audit logs",
+  "permissions": ["end_users.view", "audit_logs.view"]
+}
+```
 
-## Best Practices
-- **Principle of Least Privilege**: Start users with the `Member` role and only upgrade them to `Admin` if they need to manage other users.
-- **Use Custom Roles** for specialized tasks (e.g., "Developer", "Support") to avoid over-provisioning permissions.
-- **Audit your team regularly**. Use the Organization Audit Log (`GET /api/organizations/:org_slug/audit-log`) to track role changes.
+## Member APIs
+
+- `GET /api/organizations/:org_slug/members`
+- `PATCH /api/organizations/:org_slug/members/:user_id`
+- `POST /api/organizations/:org_slug/members/:user_id`
+- `GET /api/organizations/:org_slug/members/:user_id/service-access`
+- `PUT /api/organizations/:org_slug/members/:user_id/service-access`
+- `POST /api/organizations/:org_slug/transfer-ownership`
+
+Do not let an owner demote themselves through ordinary role update flows; source blocks self-role changes.
+
+## Invitations
+
+- `POST /api/organizations/:org_slug/invitations`
+- `GET /api/organizations/:org_slug/invitations`
+- `POST /api/organizations/:org_slug/invitations/:invitation_id`
+- `POST /api/organizations/:org_slug/invitations/:invitation_id/accept`
+- `GET /api/invitations`
+- `POST /api/invitations/accept`
+- `POST /api/invitations/:invitation_id/accept`
+- `POST /api/invitations/:invitation_id/decline`
+- Public decline: `POST /api/invitations/decline`
+- Public accept redirect: `GET /invitations/accept/:token`
+
+## SCIM
+
+Generate SCIM tokens under the organization API:
+
+- `POST /api/organizations/:org_slug/scim-tokens`
+- `GET /api/organizations/:org_slug/scim-tokens`
+- `POST /api/organizations/:org_slug/scim-tokens/:token_id/revoke`
+- `DELETE /api/organizations/:org_slug/scim-tokens/:token_id`
+
+Provision users and groups through SCIM bearer-token routes:
+
+- `GET/POST /scim/v2/Users`
+- `GET/PUT/PATCH/DELETE /scim/v2/Users/:id`
+- `GET/POST /scim/v2/Groups`
+- `GET/PUT/PATCH/DELETE /scim/v2/Groups/:id`
+
+SCIM routes use SCIM token authentication, not normal user JWT membership.

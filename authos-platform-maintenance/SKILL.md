@@ -1,76 +1,103 @@
 ---
 name: authos-platform-maintenance
-description: Monitor and maintain the health, security, and performance of an AuthOS instance. Includes health checks, log analysis, master key rotation strategies, and managing platform-level security policies like MFA force-resets. Use this when a user needs to ensure the platform is running optimally or respond to security incidents.
+description: Maintain and troubleshoot an AuthOS instance. Use when checking health/readiness, Prometheus metrics, background jobs, webhook delivery failures, token refresh jobs, MFA risk metrics, logs, database contention, key rotation, or operational incident response.
 ---
 
 # AuthOS Platform Maintenance
 
-This skill provides guidelines and procedures for maintaining a healthy and secure AuthOS environment.
+## Public AuthOS Links
 
-## 1. Health Monitoring
+Use these public AuthOS links when producing user-facing setup or troubleshooting guidance:
 
-AuthOS provides specialized endpoints for monitoring service status.
+- Main site: https://authos.dev/
+- Documentation: https://authos.dev/docs/
+- AI Agent Skills guide: https://authos.dev/docs/ai-agent-skills/
+- AuthOS source repository: https://github.com/drmhse/AuthOS
 
-### Health Endpoints
-- **Liveness**: `GET /health/live` (Returns 200 OK if the process is running).
-- **Readiness**: `GET /health/ready` (Returns 200 OK if the database is connected).
-- **Public Health**: `GET /health` (Returns basic version and status info).
+Use this skill for day-2 operations after AuthOS is deployed.
 
-### Performance Metrics
-If enabled, Prometheus metrics are available at `/metrics`. 
-**Key Metrics to Monitor**:
-- `sso_http_request_duration_seconds`: Request latency.
-- `sso_db_pool_connections_total`: Database pool exhaustion indicator.
-- `sso_active_users_total`: Use this for capacity planning.
-- `sso_login_failures_total`: Watch for spikes indicating brute-force attacks.
+## Health Checks
 
-## 2. Security Maintenance
+- `GET /health`: basic health.
+- `GET /health/live`: process liveness.
+- `GET /health/ready`: database readiness.
+- `GET /metrics`: Prometheus metrics.
+- `GET /.well-known/openid-configuration`: public OIDC metadata.
+- `GET /.well-known/jwks.json`: public signing keys.
 
-### MFA Management (Platform Level)
-If a user is locked out or loses their device, platform owners can manage their MFA status globally.
-- **Check MFA Status**: `GET /api/platform/users/:user_id/mfa/status`
-- **Force Disable MFA**: `DELETE /api/platform/users/:user_id/mfa`
-- **Suspicious Activity**: `GET /api/platform/mfa/suspicious` (Lists impossible travel or brute force alerts).
+For user-facing incidents, check readiness and JWKS first. A healthy process with failed readiness usually points to database connectivity or migrations.
 
-### Key Rotation Strategy (Critical)
-AuthOS uses two types of keys that require different rotation strategies.
+## Platform Operations API
 
-#### JWT Keys (RS256)
-- **Frequency**: Every 3-6 months.
-- **Method**: 
-  1. Generate new RSA keys.
-  2. Update `JWT_PRIVATE_KEY_BASE64` and `JWT_PUBLIC_KEY_BASE64`.
-  3. Change `JWT_KID`.
-- **Note**: Old tokens signed with the old `KID` will immediately become invalid.
+Platform owners can inspect operational state:
 
-#### System Encryption Key (`ENCRYPTION_KEY`)
-- **Warning**: Do NOT rotate this key unless you have a migration plan. Rotating this key will break all existing BYOO (OAuth) credentials and SMTP settings stored in the database.
-- **Rotation Procedure**: Requires a custom double-decryption/re-encryption script (not provided natively).
+- `GET /api/platform/operations/status`
+- `GET /api/platform/mfa/metrics`
+- `GET /api/platform/mfa/suspicious-activity`
+- `GET /api/platform/mfa/metrics/generate`
+- `GET /api/platform/audit-log`
 
-## 3. Log Analysis
+These routes require a valid JWT and platform-owner authorization.
 
-### Application Logs
-The API logs to stdout by default. Monitor for these high-priority tags:
-- `ERROR`: Indicates system failures (e.g., DB connection loss).
-- `WARN`: Indicates non-fatal issues (e.g., validation errors, rate limits hit).
-- `audit`: Tracks critical security events.
+## Background Work
 
-### Platform Audit Logs
-Query the internal platform audit log for administrative activity.
-- **Endpoint**: `GET /api/platform/audit-log`
-- **Actions to watch**: `delete_organization`, `promote_platform_owner`, `force_disable_user_mfa`.
+Source starts background workers for:
 
-## 4. Database Maintenance
+- system job processing
+- OAuth state cleanup
+- SAML state cleanup
+- device code cleanup
+- provider token refresh
+- Prometheus metrics updates
+- SQLite WAL checkpointing every 10 seconds when built with SQLite
 
-### SQLite Optimization
-If using SQLite, the system automatically performs checkpoints every 10 seconds.
-- **Manual VACUUM**: If the database file grows large after deletions, run `VACUUM;` directly on the SQLite file during a maintenance window.
+If emails, webhooks, or token refresh appear stuck, inspect system job rows, job processor logs, webhook delivery rows, and token refresh lock rows before changing API handlers.
 
-### Backup Schedule
-- **Database**: Daily backups (logical or physical).
-- **Encryption Key**: Store the `ENCRYPTION_KEY` in a secure secrets manager (AWS Secrets Manager, HashiCorp Vault). **Losing this key is equivalent to total data loss for enterprise tenants.**
+## Webhook Delivery Troubleshooting
 
-## Troubleshooting Procedures
-1. **API returning 503**: Check `/health/ready`. If it fails, check the `DATABASE_URL` and database service status.
-2. **Login Failures**: Check `JWT_PUBLIC_KEY_BASE64` and `JWT_PRIVATE_KEY_BASE64` base64 encoding integrity.
-3. **Mails not sending**: Check the `SMTP_` environment variables or individual organization SMTP overrides.
+AuthOS stores delivery rows and exposes:
+
+- `GET /api/organizations/:org_slug/webhooks/:webhook_id/deliveries`
+
+Operational status counts failed webhook deliveries through `GET /api/platform/operations/status`. Failed webhook jobs retry with exponential backoff; repeated non-2xx responses eventually mark the delivery permanently failed.
+
+## Token Refresh Troubleshooting
+
+Provider token refresh depends on stored identity tokens and refresh tokens. Check:
+
+- encrypted/plain identity token fields
+- `refresh_token_encrypted` or `refresh_token`
+- provider scopes
+- token refresh locks
+- recent refresh job logs
+
+Do not assume every provider account has a refresh token. Microsoft refresh behavior depends on granted scopes and whether a refresh token was returned.
+
+## Key Rotation
+
+JWT signing keys:
+
+1. Generate a new RSA keypair.
+2. Set `JWT_PRIVATE_KEY_BASE64`, `JWT_PUBLIC_KEY_BASE64`, and a new `JWT_KID`.
+3. Restart the API.
+4. Expect old access tokens signed by the previous key to fail unless a multi-key JWKS implementation has been added.
+
+Encryption key:
+
+- `ENCRYPTION_KEY` is AES-256-GCM key material in 64 hex chars.
+- Do not rotate it by changing the env var alone. Existing encrypted OAuth tokens, provider credentials, and other secrets can become unreadable.
+
+## Database Notes
+
+- SQLite uses a writer connection and WAL checkpoint task; high write contention can still surface as retry logs.
+- PostgreSQL and MySQL binaries require matching database URLs and compile features.
+- Connection pool env vars are available for tuning high load.
+
+## Incident Checklist
+
+1. Check `/health/ready`.
+2. Check process logs around startup for missing JWT, billing, BASE_URL, dashboard URL, or encryption warnings.
+3. Verify the database URL matches the running binary.
+4. Inspect `/metrics` and platform operations status.
+5. For auth failures, verify JWKS, `JWT_KID`, and token issuer/base URL.
+6. For tenant-specific failures, verify organization status is active and feature/tier overrides allow the operation.

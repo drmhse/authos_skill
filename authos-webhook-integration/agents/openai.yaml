@@ -1,0 +1,4 @@
+interface:
+  display_name: "AuthOS Webhook Integration"
+  short_description: "Configure and verify tenant webhooks"
+  default_prompt: "Use $authos-webhook-integration to build an AuthOS webhook receiver."

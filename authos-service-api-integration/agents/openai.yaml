@@ -1,0 +1,4 @@
+interface:
+  display_name: "AuthOS Service API Integration"
+  short_description: "Use trusted API-key service routes"
+  default_prompt: "Use $authos-service-api-integration to call AuthOS service API routes from my backend."

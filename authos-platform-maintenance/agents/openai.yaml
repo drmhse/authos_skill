@@ -1,0 +1,4 @@
+interface:
+  display_name: "AuthOS Platform Maintenance"
+  short_description: "Operate health, jobs, metrics, and keys"
+  default_prompt: "Use $authos-platform-maintenance to troubleshoot my AuthOS instance."

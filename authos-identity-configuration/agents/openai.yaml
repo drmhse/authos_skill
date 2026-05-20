@@ -1,0 +1,4 @@
+interface:
+  display_name: "AuthOS Identity Configuration"
+  short_description: "Configure tenant login and identity options"
+  default_prompt: "Use $authos-identity-configuration to configure AuthOS identity providers for my tenant."

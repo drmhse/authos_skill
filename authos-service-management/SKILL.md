@@ -1,76 +1,95 @@
 ---
 name: authos-service-management
-description: Architect and manage services within an organization. Includes creating new services (web, mobile, api), managing client credentials, defining pricing plans, and monitoring service-specific usage. Use this when a user is building multiple applications on top of the same AuthOS organization.
+description: Manage AuthOS tenant services, OAuth client credentials, redirect URIs, device activation URIs, plans, API keys, SAML settings, and checkout. Use when creating or configuring applications inside an AuthOS organization.
 ---
 
 # AuthOS Service Management
 
-This skill covers how to manage "Services" in AuthOS. A Service represents an application (client) that uses AuthOS for authentication.
+## Public AuthOS Links
 
-## 1. Creating a Service
+Use these public AuthOS links when producing user-facing setup or troubleshooting guidance:
 
-Services are the primary way to integrate AuthOS into your apps.
+- Main site: https://authos.dev/
+- Documentation: https://authos.dev/docs/
+- AI Agent Skills guide: https://authos.dev/docs/ai-agent-skills/
+- AuthOS source repository: https://github.com/drmhse/AuthOS
 
-- **Endpoint**: `POST /api/organizations/:org_slug/services`
-- **Service Types**:
-  - `web`: For browser-based apps using the SDK.
-  - `api`: For backend-to-backend communication (API Keys).
-  - `mobile`: For iOS/Android apps.
-  - `desktop`: For native desktop applications.
+Use this skill when configuring applications inside an AuthOS organization. Use `authos-service-api-integration` when consuming service API routes with an API key.
 
-### Request Body
+## Service Model
+
+An AuthOS service represents an application owned by an organization. Source fields include:
+
+- `slug`, `name`, `service_type`
+- `client_id`
+- hashed `client_secret`
+- provider scopes for GitHub, Google, and Microsoft
+- `redirect_uris`
+- `device_activation_uri`
+- SAML IdP fields such as entity ID, ACS URL, SLO URL, NameID format, attribute mapping, and signing flags
+
+Service types used in the codebase include `web`, `api`, `mobile`, and `desktop`. Treat `mobile` and `desktop` as public clients that require PKCE in OAuth callback paths.
+
+## Service APIs
+
+- `GET/POST /api/organizations/:org_slug/services`
+- `GET/PATCH/DELETE /api/organizations/:org_slug/services/:service_slug`
+- `POST /api/organizations/:org_slug/services/:service_slug/secret/rotate`
+
+Create a service:
+
 ```json
 {
-  "slug": "main-app",
-  "name": "Acme Main Application",
+  "slug": "web-app",
+  "name": "Web App",
   "service_type": "web",
-  "redirect_uris": ["https://app.acme.com/callback"],
-  "google_scopes": ["openid", "email", "profile"]
+  "redirect_uris": ["https://app.example.com/callback"],
+  "github_scopes": ["user:email"],
+  "google_scopes": ["openid", "email", "profile"],
+  "microsoft_scopes": ["offline_access", "User.Read"]
 }
 ```
 
-### Response
-Creating a service returns a `client_id` and a `client_secret`. **Store the `client_secret` immediately** as it is hashed in the database and cannot be retrieved later.
+The secret is hashed server-side. Persist the returned secret immediately; retrieve flows should not expect to read it back later. Use the rotate endpoint when it is lost or compromised.
 
-## 2. Managing Client Credentials
+## Plans
 
-If a secret is lost or compromised, you must roll it.
-- **Regenerate Secret**: (This typically involves deleting and recreating the service or using a specialized admin endpoint if available).
-- **Security Note**: AuthOS hashes `client_secret` using SHA-256 before storage.
+- `GET/POST /api/organizations/:org_slug/services/:service_slug/plans`
+- `PATCH/DELETE /api/organizations/:org_slug/services/:service_slug/plans/:plan_id`
 
-## 3. Defining Pricing Plans
+Plans belong to services and are used by subscription and checkout flows. Do not delete a plan that still has active subscriptions.
 
-Each service can have multiple plans (e.g., Free, Pro, Enterprise). This allows you to restrict user access based on their subcription status.
+## Service API Keys
 
-### Create a Plan
-- **Endpoint**: `POST /api/organizations/:org_slug/services/:service_slug/plans`
-- **Body**:
-  ```json
-  {
-    "name": "Standard Plan",
-    "description": "Up to 1000 requests/mo",
-    "price_cents": 1900,
-    "currency": "usd",
-    "features": ["analytics", "advanced-matching"],
-    "is_default": true
-  }
-  ```
+- `GET/POST /api/organizations/:org_slug/services/:service_slug/api-keys`
+- `GET/DELETE /api/organizations/:org_slug/services/:service_slug/api-keys/:api_key_id`
 
-## 4. API Keys for Service-to-Service
+API keys authenticate service-to-service calls using `X-Api-Key`. Never place these keys in browser, mobile, or desktop client code.
 
-For `api` type services, you can generate long-lived API keys instead of using the OAuth flow.
+## SAML Configuration
 
-- **List Keys**: `GET /api/organizations/:org_slug/services/:service_slug/api-keys`
-- **Create Key**: `POST /api/organizations/:org_slug/services/:service_slug/api-keys`
-  - Body: `{"name": "Internal Scraper", "permissions": ["service:read"]}`
+- `POST/GET/DELETE /api/organizations/:org_slug/services/:service_slug/saml`
+- `POST/GET /api/organizations/:org_slug/services/:service_slug/saml/certificate`
+- `GET /api/organizations/:org_slug/services/:service_slug/saml/login`
 
-## 5. Usage and Limits
+Public SAML runtime routes:
 
-Organization tiers limit the number of services you can create.
-- **Default Limit**: (Varies by tier, typically 3 for Free).
-- **Check Usage**: `GET /api/organizations/:org_slug/services` returns a `usage` object with `current_services` and `max_services`.
+- `GET /saml/:org_slug/:service_slug/metadata`
+- `GET/POST /saml/:org_slug/:service_slug/sso`
+- `GET/POST /saml/:org_slug/:service_slug/slo`
+- `GET /saml/:org_slug/:service_slug/authenticate`
 
-## Best Practices
-- **Use meaningful slugs**. Slugs are used in SDK initialization and login URLs.
-- **Limit Redirect URIs**. Only allow URIs that you control to prevent authorization code theft.
-- **Keep scope requests minimal**. Only request the permissions your app actually needs from Google/GitHub/etc.
+## Checkout
+
+Create a checkout session for a service:
+
+- `POST /api/organizations/:org_slug/services/:service_slug/checkout`
+
+AuthOS also has organization-level billing routes and provider-specific webhook receivers. Keep billing provider configuration in deployment or tenancy skills, not inside frontend integration.
+
+## Configuration Rules
+
+- Always register exact `redirect_uris`; AuthOS validates service callbacks against them.
+- Configure `device_activation_uri` before offering device flow for a service.
+- Use provider scopes on the service to define what end-user OAuth should request.
+- For public clients, include PKCE support in the integration plan.

@@ -1,0 +1,17 @@
+repository:
+  name: authos_skill
+  description: "Source-verified Agent Skills for implementing and operating AuthOS."
+  homepage: "https://authos.dev/docs/ai-agent-skills/"
+  topics:
+    - agent-skills
+    - codex-skills
+    - claude-skills
+    - cursor-skills
+    - gemini-cli
+    - copilot-skills
+    - ai-agents
+    - authos
+    - authentication
+    - sso
+    - oauth
+    - identity

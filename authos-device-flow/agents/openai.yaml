@@ -1,0 +1,4 @@
+interface:
+  display_name: "AuthOS Device Flow"
+  short_description: "Device-code auth for CLIs and headless apps"
+  default_prompt: "Use $authos-device-flow to add AuthOS device login to my CLI."

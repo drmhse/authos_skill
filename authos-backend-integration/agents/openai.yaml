@@ -1,0 +1,4 @@
+interface:
+  display_name: "AuthOS Backend Integration"
+  short_description: "Verify JWTs and protect backend APIs"
+  default_prompt: "Use $authos-backend-integration to protect my backend API with AuthOS JWT verification."

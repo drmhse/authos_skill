@@ -1,0 +1,4 @@
+interface:
+  display_name: "AuthOS Web Integration"
+  short_description: "Integrate browser, React, and Vue apps"
+  default_prompt: "Use $authos-web-integration to add AuthOS login to my web app."

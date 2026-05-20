@@ -1,0 +1,4 @@
+interface:
+  display_name: "AuthOS Compliance Automation"
+  short_description: "Audit, privacy, SIEM, and risk workflows"
+  default_prompt: "Use $authos-compliance-automation to implement an AuthOS privacy or audit workflow."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "AuthOS Platform Deployment"
+  short_description: "Deploy and configure AuthOS infrastructure"
+  default_prompt: "Use $authos-platform-deployment to deploy an AuthOS API instance."

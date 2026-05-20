@@ -1,101 +1,115 @@
 ---
 name: authos-web-integration
-description: Integrate the AuthOS "Invisible SDK" into web applications. Covers session management, automatic token rotation, multi-tenant login flows, and handling authentication state changes. Use this when a developer is adding AuthOS to their frontend.
+description: Integrate AuthOS into browser, React, Vue, or plain TypeScript applications using @drmhse/sso-sdk and the AuthOS React/Vue adapters. Use when adding OAuth redirects, password login, magic links, passkeys, MFA callback handling, token refresh, or frontend session state.
 ---
 
 # AuthOS Web Integration
 
-This skill explains how to integrate the AuthOS TypeScript SDK into your web applications properly.
+## Public AuthOS Links
 
-## 1. Installation
+Use these public AuthOS links when producing user-facing setup or troubleshooting guidance:
 
-```bash
-npm install @drmhse/sso-sdk
-```
+- Main site: https://authos.dev/
+- Documentation: https://authos.dev/docs/
+- AI Agent Skills guide: https://authos.dev/docs/ai-agent-skills/
+- AuthOS source repository: https://github.com/drmhse/AuthOS
 
-## 2. Initialization
+Use this skill for browser-facing AuthOS work. If the task is server-side token verification, use `authos-backend-integration`. If it is API-key service-to-service work, use `authos-service-api-integration`.
 
-The SDK is designed to be a singleton in your application. It automatically manages tokens in `localStorage`.
+## Packages
+
+- Core SDK: `@drmhse/sso-sdk`
+- React adapter: `@drmhse/authos-react`
+- Vue adapter: `@drmhse/authos-vue`
+
+Initialize the core SDK with the API base URL:
 
 ```typescript
 import { SsoClient } from '@drmhse/sso-sdk';
 
-const sso = new SsoClient({
-  baseURL: 'https://sso.your-platform.com'
+const authos = new SsoClient({
+  baseURL: 'https://api.example.com'
 });
 ```
 
-## 3. Implementing Login Flows
+The SDK stores tokens through its `SessionManager`, uses browser `localStorage` by default, falls back to in-memory storage in Node-like runtimes, and automatically retries a request after `401` by calling `/api/auth/refresh` when a refresh token is available.
 
-AuthOS supports two main patterns: **OAuth Redirect** (recommended for BYOO) and **Native Password Auth**.
+## OAuth Redirect Login
 
-### OAuth Redirect Flow (Step-by-Step)
-1. Redirect the user to the provider:
-   ```typescript
-   const loginUrl = sso.auth.getLoginUrl('google', {
-     org: 'acme-corp',
-     service: 'main-app',
-     redirect_uri: window.location.origin + '/callback'
-   });
-   window.location.href = loginUrl;
-   ```
-2. Handle the callback:
-   AuthOS returns tokens in the URL fragment (`#token=...`) to prevent them from hitting your server logs.
-   ```typescript
-   if (window.location.hash) {
-     const params = new URLSearchParams(window.location.hash.substring(1));
-     const token = params.get('access_token');
-     if (token) {
-       // Reset SDK with the token
-       const sso = new SsoClient({ baseURL: '...', token });
-       window.history.replaceState(null, '', window.location.pathname);
-     }
-   }
-   ```
+Build the login URL and redirect the browser:
 
-### Native Password Auth
 ```typescript
-await sso.auth.login({
-  email: 'user@example.com',
-  password: 'SecurePass123!',
-  org_slug: 'acme-corp',
-  service_slug: 'main-app'
+const url = authos.auth.getLoginUrl('github', {
+  org: 'acme',
+  service: 'web-app',
+  redirect_uri: 'https://app.example.com/callback'
 });
+
+window.location.href = url;
 ```
 
-## 4. Handling Auth State
-
-Use `onAuthStateChange` to update your UI (e.g., show/hide login buttons).
+Handle callback fragments:
 
 ```typescript
-sso.onAuthStateChange((isAuthenticated) => {
-  if (isAuthenticated) {
-    console.log('User is logged in');
-  } else {
-    console.log('User is logged out');
-  }
-});
-```
+const hash = new URLSearchParams(window.location.hash.slice(1));
+const accessToken = hash.get('access_token');
+const refreshToken = hash.get('refresh_token');
+const preauthToken = hash.get('preauth_token');
 
-## 5. Automatic Token Rotation (The "Invisible" Part)
+if (accessToken) {
+  await authos.setSession({
+    access_token: accessToken,
+    refresh_token: refreshToken ?? undefined
+  });
+  window.history.replaceState(null, '', window.location.pathname);
+}
 
-The SDK uses a custom `fetch` wrapper that intercepts 401 errors.
-- If a request fails with 401, it automatically calls `/api/auth/refresh`.
-- If refresh succeeds, it retries the original request with the new token.
-- **You do not need to manually handle token expiration in your business logic.**
-
-## 6. Accessing User Data
-
-```typescript
-try {
-  const profile = await sso.user.getProfile();
-  const permissions = await sso.user.getPermissions('org-slug');
-} catch (error) {
-  // If getProfile throws, the session is likely invalid/expired
+if (preauthToken) {
+  // Show MFA UI and call authos.auth.verifyMfa(preauthToken, code).
 }
 ```
 
-## Common Integration Pitfalls
-- **Incorrect `BASE_URL`**: Ensure it includes the protocol (`https://`) and no trailing slash.
-- **Missing `org_slug` during login**: While optional, omitting it will return a platform-level JWT which might not have the correct service permissions.
-- **CORS Issues**: Ensure your web app's domain is allowed in the `PLATFORM_CORS_ALLOWED_ORIGINS` (if configured) or that the API is configured to allow your origin.
+AuthOS callback handlers append tokens to the redirect URI as fragments for browser flows. Do not build web callbacks around `?code=` exchange unless you have verified a source path that explicitly returns JSON for your scenario.
+
+## Password, Magic Link, Passkey, MFA
+
+Use password login for native email/password flows:
+
+```typescript
+const session = await authos.auth.login({
+  email: 'user@example.com',
+  password: 'correct horse battery staple',
+  org_slug: 'acme',
+  service_slug: 'web-app'
+});
+```
+
+If login returns an MFA pre-auth token or the OAuth callback has `mfa_required=true`, complete MFA:
+
+```typescript
+await authos.auth.verifyMfa(preauthToken, code);
+```
+
+The core SDK also exposes:
+
+- `authos.magicLinks.request(...)` and `authos.magicLinks.verify(...)` for `/api/auth/magic-link/*`.
+- `authos.passkeys.authenticateStart/Finish` and registration helpers for `/api/auth/passkeys/*`.
+- `authos.auth.register`, `forgotPassword`, `resetPassword`, `resendVerification`, and `lookupEmail`.
+
+## Organization Context
+
+Prefer explicit `org` and `service` values for app login. AuthOS supports platform-level sessions, org-scoped sessions, and service-scoped sessions; user-facing apps normally need the service-scoped form so subscription, provider token, and permission checks match the application.
+
+Switch org context with:
+
+```typescript
+await authos.organizations.select('acme');
+```
+
+## Frontend Safety
+
+- Clear callback fragments after storing tokens.
+- Keep `redirect_uri` registered on the AuthOS service and validate it in app configuration.
+- Use HTTPS for production callbacks.
+- Treat provider access tokens from `/api/provider-token/:provider` as sensitive user tokens.
+- Do not embed service API keys in frontend code; those belong only on trusted servers.

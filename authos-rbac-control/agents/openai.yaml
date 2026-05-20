@@ -1,0 +1,4 @@
+interface:
+  display_name: "AuthOS RBAC Control"
+  short_description: "Manage roles, members, invites, and SCIM"
+  default_prompt: "Use $authos-rbac-control to configure AuthOS organization permissions."

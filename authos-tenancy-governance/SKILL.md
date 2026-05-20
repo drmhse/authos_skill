@@ -1,81 +1,101 @@
 ---
 name: authos-tenancy-governance
-description: Manage the complete lifecycle of tenant organizations from a platform owner perspective. Includes approving new organizations, managing subscription tiers, suspending or activating tenants, and reviewing platform-wide audit logs. Use this when a user needs to perform administrative actions on tenant accounts.
+description: Govern AuthOS tenant organizations as a platform owner. Use when approving, rejecting, suspending, activating, deleting, tiering, setting feature overrides, inspecting platform analytics, managing platform owners, or impersonating users.
 ---
 
 # AuthOS Tenancy Governance
 
-This skill covers the administrative tasks required to manage organizations (tenants) on the AuthOS platform. These actions require **Platform Owner** privileges.
+## Public AuthOS Links
 
-## 1. Organization Lifecycle Management
+Use these public AuthOS links when producing user-facing setup or troubleshooting guidance:
 
-Organizations move through several states. You can manage these via the Platform API or Admin Dashboard.
+- Main site: https://authos.dev/
+- Documentation: https://authos.dev/docs/
+- AI Agent Skills guide: https://authos.dev/docs/ai-agent-skills/
+- AuthOS source repository: https://github.com/drmhse/AuthOS
 
-### Approving a New Organization
-When a new organization registers, it typically starts in a `pending` state.
-- **Endpoint**: `POST /api/platform/organizations/:id/approve`
-- **Body**: `{"tier_id": "tier_pro"}` (Optional, defaults to `tier_free`)
-- **Action**: Use this to grant an organization access to the platform.
+Use this skill for platform-owner operations across tenants. Use `authos-rbac-control` for actions inside a single organization by org members/admins.
 
-### Rejecting an Organization
-- **Endpoint**: `POST /api/platform/organizations/:id/reject`
-- **Body**: `{"reason": "Incomplete documentation"}`
-- **Action**: Moves the organization to `rejected` status.
+## Authorization Boundary
 
-### Suspending and Activating
-- **Suspend**: `POST /api/platform/organizations/:id/suspend` (Blocks all authentication for that tenant).
-- **Activate**: `POST /api/platform/organizations/:id/activate` (Restores access for a suspended tenant).
+Platform routes require:
 
-## 2. Tier and Limit Management
+1. a valid AuthOS JWT,
+2. `is_platform_owner` authorization through middleware.
 
-You can override defaults for specific organizations.
+Do not present platform governance APIs as tenant-admin APIs.
 
-### Updating Tiers
-- **Endpoint**: `PATCH /api/platform/organizations/:id/tier`
-- **Body**: 
-  ```json
-  {
-    "tier_id": "tier_enterprise",
-    "max_services": 50,
-    "max_users": 5000
-  }
-  ```
+## Organization Lifecycle
 
-### Feature Overrides
-Enable specific features regardless of the assigned tier.
-- **Endpoint**: `PATCH /api/platform/organizations/:id/features`
-- **Available Fields**:
-  - `allow_custom_domain`: boolean
-  - `allow_saml_idp`: boolean
-  - `allow_scim`: boolean
-  - `allow_siem`: boolean
-  - `allow_branding`: boolean
-  - `allow_passkeys`: boolean
-  - `allowed_social_providers`: string[] (e.g., `["github", "google"]`)
+- `GET /api/platform/organizations`
+- `POST /api/platform/organizations/:id/approve`
+- `POST /api/platform/organizations/:id/reject`
+- `POST /api/platform/organizations/:id/suspend`
+- `POST /api/platform/organizations/:id/activate`
+- `DELETE /api/platform/organizations/:id`
 
-## 3. Platform Analytics and Audit
+Organization status matters at runtime. Active-organization middleware protects service and tenant configuration routes so suspended tenants should not keep authenticating normally.
 
-### Monitoring Growth
-- **Overview**: `GET /api/platform/analytics/overview` (Total orgs, active users, growth rate).
-- **Status Breakdown**: `GET /api/platform/analytics/organization-status`.
-- **Top Organizations**: `GET /api/platform/analytics/top-organizations` (By MAU or login count).
+## Tiers And Feature Overrides
 
-### Audit Logs
-The Platform Audit Log tracks every administrative action taken by platform owners.
-- **Get Audit Log**: `GET /api/platform/audit-log`
-- **Common Event Types**:
-  - `approve_organization`
-  - `suspend_organization`
-  - `update_organization_tier`
-  - `promote_platform_owner`
+- `GET /api/platform/tiers`
+- `PATCH /api/platform/organizations/:id/tier`
+- `PATCH /api/platform/organizations/:id/features`
 
-## 4. User Impersonation (Safety Warning)
-Platform owners can impersonate a user to troubleshoot issues. This action is heavily audited.
-- **Endpoint**: `POST /api/platform/impersonate`
-- **Body**: `{"user_id": "..."}`
-- **Note**: This generates a session for the target user that the platform owner can use.
+Feature override fields in source include:
 
-## Best Practices
-- **Always provide a reason** when rejecting or suspending an organization.
-- **Monitor the `pending` queue** daily to ensure a smooth onboarding experience.
-- **Verify custom domain requests** before enabling `allow_custom_domain` if it's an enterprise-only feature.
+- `allow_custom_domain`
+- `allow_saml_idp`
+- `allow_scim`
+- `allow_siem`
+- `allow_branding`
+- `allow_passkeys`
+- `allowed_social_providers`
+
+When a tenant cannot configure a feature, inspect both assigned tier and feature overrides.
+
+## Platform Owners And Users
+
+- `POST /api/platform/owners`
+- `DELETE /api/platform/owners/:user_id`
+- `GET /api/platform/users`
+- `GET /api/platform/users/search`
+- `GET /api/platform/users/:user_id`
+- `GET /api/platform/users/:user_id/mfa/status`
+- `DELETE /api/platform/users/:user_id/mfa`
+
+Do not demote the last platform owner. Source explicitly checks for that safety condition.
+
+## Impersonation
+
+- `POST /api/platform/impersonate`
+
+Treat impersonation as a high-risk support action. It is audited and should be limited to cases where a platform owner or authorized org admin needs to troubleshoot a user issue.
+
+## Platform Analytics
+
+- `GET /api/platform/analytics/overview`
+- `GET /api/platform/analytics/organization-status`
+- `GET /api/platform/analytics/growth-trends`
+- `GET /api/platform/analytics/login-activity`
+- `GET /api/platform/analytics/top-organizations`
+- `GET /api/platform/analytics/recent-organizations`
+
+Use these for platform reporting and tenant health, not as tenant-facing analytics. Tenant login analytics live under `/api/organizations/:org_slug/analytics/*`.
+
+## Operational And Audit Routes
+
+- `GET /api/platform/audit-log`
+- `GET /api/platform/operations/status`
+- `GET /api/platform/mfa/metrics`
+- `GET /api/platform/mfa/suspicious-activity`
+- `GET /api/platform/mfa/metrics/generate`
+
+Use audit logs to confirm governance changes such as organization approval, suspension, tier change, and owner promotion/demotion.
+
+## Governance Rules
+
+- Always record a clear reason for rejection or suspension when the API accepts one.
+- Validate requested feature overrides against the tenant's intended tier.
+- Prefer activate/suspend over delete unless the user explicitly asks for destructive cleanup.
+- Verify custom domain and enterprise SSO prerequisites before enabling high-risk features.

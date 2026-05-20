@@ -81,34 +81,37 @@ The docs page should be the deeper reference and should link to this repo, insta
 
 ## Agentregistry Publishing
 
-Agentregistry can catalog these skills as Git-backed skill references. With `arctl v0.3.3`, the publish command uses `--git` for GitHub sources.
+Agentregistry catalogs skills inside a registry instance. Do not use the default `http://localhost:12121` registry for public visibility; that only publishes to a local Docker-backed catalog on one machine.
 
-Install and start agentregistry:
+As of `arctl v0.3.3`, the public docs do not list a universal hosted agentregistry endpoint where anyone can submit skills. To publish AuthOS skills to a public or shared agentregistry, use the operator-provided registry URL and token:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/agentregistry-dev/agentregistry/main/scripts/get-arctl | bash
-arctl daemon start
-arctl version
+export ARCTL_REGISTRY_URL="https://<public-or-shared-agentregistry>"
+export ARCTL_API_TOKEN="<registry-token>"
 ```
 
-Dry-run every skill before publishing:
+Dry-run every skill against the target registry:
 
 ```bash
 for d in authos-*; do
   [ -f "$d/SKILL.md" ] || continue
   arctl skill publish "$d" \
+    --registry-url "$ARCTL_REGISTRY_URL" \
+    --registry-token "$ARCTL_API_TOKEN" \
     --git "https://github.com/drmhse/authos_skill/tree/master/$d" \
     --version 1.0.0 \
     --dry-run
 done
 ```
 
-Publish every skill:
+Publish every skill to the target registry:
 
 ```bash
 for d in authos-*; do
   [ -f "$d/SKILL.md" ] || continue
   arctl skill publish "$d" \
+    --registry-url "$ARCTL_REGISTRY_URL" \
+    --registry-token "$ARCTL_API_TOKEN" \
     --git "https://github.com/drmhse/authos_skill/tree/master/$d" \
     --version 1.0.0
 done
@@ -117,7 +120,9 @@ done
 Verify:
 
 ```bash
-arctl skill list
+arctl skill list \
+  --registry-url "$ARCTL_REGISTRY_URL" \
+  --registry-token "$ARCTL_API_TOKEN"
 ```
 
 ## Directory Submission Checklist

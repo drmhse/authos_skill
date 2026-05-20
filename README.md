@@ -109,7 +109,7 @@ Before publishing or announcing this repository:
 - Set the repo homepage to `https://authos.dev/docs/ai-agent-skills/`.
 - Add GitHub topics: `agent-skills`, `codex-skills`, `claude-skills`, `cursor-skills`, `gemini-cli`, `copilot-skills`, `ai-agents`, `authos`, `authentication`, `sso`, `oauth`, `identity`.
 - Link this repo from both AuthOS public websites: the main AuthOS site and the AuthOS docs site.
-- Publish the skills to agentregistry as Git-backed skill references when maintaining a shared agentregistry catalog.
+- Publish the skills to a shared or public agentregistry instance as Git-backed skill references only when you have its registry URL and token; the local `localhost:12121` daemon is not public distribution.
 - Add a license before broad public submission if one is not already present.
 
 See [PUBLISHING.md](./PUBLISHING.md) for the full release and directory-submission checklist.

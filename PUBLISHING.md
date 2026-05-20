@@ -79,6 +79,47 @@ Publish visibility through both AuthOS websites:
 
 The docs page should be the deeper reference and should link to this repo, install paths, and skill coverage. The main site should be shorter and should send developers to the docs page or GitHub repo.
 
+## Agentregistry Publishing
+
+Agentregistry can catalog these skills as Git-backed skill references. With `arctl v0.3.3`, the publish command uses `--git` for GitHub sources.
+
+Install and start agentregistry:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/agentregistry-dev/agentregistry/main/scripts/get-arctl | bash
+arctl daemon start
+arctl version
+```
+
+Dry-run every skill before publishing:
+
+```bash
+for d in authos-*; do
+  [ -f "$d/SKILL.md" ] || continue
+  arctl skill publish "$d" \
+    --git "https://github.com/drmhse/authos_skill/tree/master/$d" \
+    --version 1.0.0 \
+    --dry-run
+done
+```
+
+Publish every skill:
+
+```bash
+for d in authos-*; do
+  [ -f "$d/SKILL.md" ] || continue
+  arctl skill publish "$d" \
+    --git "https://github.com/drmhse/authos_skill/tree/master/$d" \
+    --version 1.0.0
+done
+```
+
+Verify:
+
+```bash
+arctl skill list
+```
+
 ## Directory Submission Checklist
 
 Submit the GitHub repo URL anywhere Agent Skills are indexed. Use this copy:

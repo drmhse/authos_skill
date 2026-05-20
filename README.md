@@ -11,6 +11,11 @@ Public AuthOS links:
 - AI Agent Skills guide: [authos.dev/docs/ai-agent-skills](https://authos.dev/docs/ai-agent-skills/)
 - AuthOS source repository: [github.com/drmhse/AuthOS](https://github.com/drmhse/AuthOS)
 
+Registry links:
+
+- Skill Vault package: [skillvault.md/ckcreative/authos-skill](https://skillvault.md/ckcreative/authos-skill)
+- PolySkill namespace: [polyskill.ai/browse?author=ckcreative](https://polyskill.ai/browse?author=ckcreative)
+
 AuthOS package names used by these skills:
 
 - `@drmhse/sso-sdk`
@@ -110,6 +115,7 @@ Before publishing or announcing this repository:
 - Add GitHub topics: `agent-skills`, `codex-skills`, `claude-skills`, `cursor-skills`, `gemini-cli`, `copilot-skills`, `ai-agents`, `authos`, `authentication`, `sso`, `oauth`, `identity`.
 - Link this repo from both AuthOS public websites: the main AuthOS site and the AuthOS docs site.
 - Import this repository into PolySkill as `authos-skill` in the `security` category after the public `LICENSE` file is visible on GitHub.
+- Publish this repository to Skill Vault as `ckcreative/authos-skill` in the `security` category.
 - Publish the skills to a shared or public agentregistry instance as Git-backed skill references only when you have its registry URL and token; the local `localhost:12121` daemon is not public distribution.
 
 See [PUBLISHING.md](./PUBLISHING.md) for the full release and directory-submission checklist.

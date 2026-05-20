@@ -146,6 +146,26 @@ Each `authos-*` skill directory includes PolySkill-compatible files:
 
 Use scoped names under `@ckcreative/`, for example `@ckcreative/authos-web-integration`. PolySkill names must be lowercase and descriptions must be 200 characters or less.
 
+## Skill Vault Publishing
+
+Skill Vault is a public marketplace at `https://skillvault.md`. Publish this repository as one multi-skill package:
+
+- Package URL: `https://skillvault.md/ckcreative/authos-skill`
+- Owner: `ckcreative`
+- Package name: `authos-skill`
+- Category: `security`
+- Version: `1.0.0`
+- License: MIT, from the root `LICENSE` file.
+- Repository URL: `https://github.com/drmhse/authos_skill`
+- Homepage URL: `https://authos.dev/docs/ai-agent-skills/`
+
+The package zip should include the root README, LICENSE, and every `authos-*` skill directory. Verify after publishing:
+
+```bash
+curl -fsSL https://skillvault.md/api/packages/ckcreative/authos-skill | jq '.name, .license, .skill_names'
+curl -fsSL https://skillvault.md/api/packages/ckcreative/authos-skill/download -o authos-skill.zip
+```
+
 ## Directory Submission Checklist
 
 Submit the GitHub repo URL anywhere Agent Skills are indexed. Use this copy:

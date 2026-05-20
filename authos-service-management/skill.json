@@ -1,0 +1,30 @@
+{
+  "name": "@ckcreative/authos-service-management",
+  "version": "1.0.0",
+  "description": "Manage AuthOS tenant services, OAuth client credentials, redirect URIs, device activation URIs, plans, API keys, SAML, and checkout.",
+  "type": "workflow",
+  "license": "MIT",
+  "author": {
+    "name": "ckcreative"
+  },
+  "skill": {
+    "instructions": "./instructions.md"
+  },
+  "adapters": [
+    "openai",
+    "anthropic"
+  ],
+  "keywords": [
+    "service-management",
+    "oauth-client",
+    "redirect-uri",
+    "tenant",
+    "authos",
+    "authentication",
+    "sso",
+    "oauth",
+    "oidc",
+    "agent-skills"
+  ],
+  "category": "coding-data"
+}

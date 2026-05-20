@@ -1,0 +1,31 @@
+{
+  "name": "@ckcreative/authos-platform-deployment",
+  "version": "1.0.0",
+  "description": "Deploy and configure an AuthOS API instance from source or Docker with databases, JWT keys, health checks, and production settings.",
+  "type": "workflow",
+  "license": "MIT",
+  "author": {
+    "name": "ckcreative"
+  },
+  "skill": {
+    "instructions": "./instructions.md"
+  },
+  "adapters": [
+    "openai",
+    "anthropic"
+  ],
+  "keywords": [
+    "deployment",
+    "docker",
+    "rust",
+    "database",
+    "operations",
+    "authos",
+    "authentication",
+    "sso",
+    "oauth",
+    "oidc",
+    "agent-skills"
+  ],
+  "category": "coding-data"
+}

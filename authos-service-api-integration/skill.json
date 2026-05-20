@@ -1,0 +1,30 @@
+{
+  "name": "@ckcreative/authos-service-api-integration",
+  "version": "1.0.0",
+  "description": "Integrate trusted backend services with AuthOS service API routes using X-Api-Key for users, metadata, analytics, and subscriptions.",
+  "type": "workflow",
+  "license": "MIT",
+  "author": {
+    "name": "ckcreative"
+  },
+  "skill": {
+    "instructions": "./instructions.md"
+  },
+  "adapters": [
+    "openai",
+    "anthropic"
+  ],
+  "keywords": [
+    "api-key",
+    "service-api",
+    "server-side",
+    "integration",
+    "authos",
+    "authentication",
+    "sso",
+    "oauth",
+    "oidc",
+    "agent-skills"
+  ],
+  "category": "coding-data"
+}

@@ -1,0 +1,31 @@
+{
+  "name": "@ckcreative/authos-platform-maintenance",
+  "version": "1.0.0",
+  "description": "Maintain and troubleshoot AuthOS health, readiness, metrics, jobs, webhooks, token refresh, risk metrics, logs, and key rotation.",
+  "type": "workflow",
+  "license": "MIT",
+  "author": {
+    "name": "ckcreative"
+  },
+  "skill": {
+    "instructions": "./instructions.md"
+  },
+  "adapters": [
+    "openai",
+    "anthropic"
+  ],
+  "keywords": [
+    "maintenance",
+    "observability",
+    "metrics",
+    "health",
+    "operations",
+    "authos",
+    "authentication",
+    "sso",
+    "oauth",
+    "oidc",
+    "agent-skills"
+  ],
+  "category": "coding-data"
+}

@@ -1,0 +1,30 @@
+{
+  "name": "@ckcreative/authos-webhook-integration",
+  "version": "1.0.0",
+  "description": "Build AuthOS webhook receivers, manage tenant webhook subscriptions, verify signatures, and inspect delivery history.",
+  "type": "workflow",
+  "license": "MIT",
+  "author": {
+    "name": "ckcreative"
+  },
+  "skill": {
+    "instructions": "./instructions.md"
+  },
+  "adapters": [
+    "openai",
+    "anthropic"
+  ],
+  "keywords": [
+    "webhooks",
+    "signatures",
+    "events",
+    "delivery",
+    "authos",
+    "authentication",
+    "sso",
+    "oauth",
+    "oidc",
+    "agent-skills"
+  ],
+  "category": "coding-data"
+}

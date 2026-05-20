@@ -125,6 +125,27 @@ arctl skill list \
   --registry-token "$ARCTL_API_TOKEN"
 ```
 
+## PolySkill Publishing
+
+PolySkill is a public community registry at `https://polyskill.ai`. It supports two relevant discovery paths:
+
+- Import the GitHub repository as a package.
+- Publish each skill through the PolySkill API or CLI.
+
+Repository import settings:
+
+- Repository URL: `https://github.com/drmhse/authos_skill`
+- Package name: `authos-skill`
+- Category: `security`
+- License: MIT, from the root `LICENSE` file.
+
+Each `authos-*` skill directory includes PolySkill-compatible files:
+
+- `skill.json`: PolySkill manifest.
+- `instructions.md`: generated from the canonical `SKILL.md`.
+
+Use scoped names under `@ckcreative/`, for example `@ckcreative/authos-web-integration`. PolySkill names must be lowercase and descriptions must be 200 characters or less.
+
 ## Directory Submission Checklist
 
 Submit the GitHub repo URL anywhere Agent Skills are indexed. Use this copy:

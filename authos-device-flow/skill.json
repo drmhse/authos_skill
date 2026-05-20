@@ -1,0 +1,29 @@
+{
+  "name": "@ckcreative/authos-device-flow",
+  "version": "1.0.0",
+  "description": "Implement AuthOS OAuth device authorization for CLIs, TVs, headless apps, activation pages, and token polling.",
+  "type": "workflow",
+  "license": "MIT",
+  "author": {
+    "name": "ckcreative"
+  },
+  "skill": {
+    "instructions": "./instructions.md"
+  },
+  "adapters": [
+    "openai",
+    "anthropic"
+  ],
+  "keywords": [
+    "device-flow",
+    "cli",
+    "oauth",
+    "headless",
+    "authos",
+    "authentication",
+    "sso",
+    "oidc",
+    "agent-skills"
+  ],
+  "category": "coding-data"
+}

@@ -1,0 +1,30 @@
+{
+  "name": "@ckcreative/authos-tenancy-governance",
+  "version": "1.0.0",
+  "description": "Govern AuthOS tenant organizations as a platform owner, including lifecycle, tiers, feature overrides, analytics, and impersonation.",
+  "type": "workflow",
+  "license": "MIT",
+  "author": {
+    "name": "ckcreative"
+  },
+  "skill": {
+    "instructions": "./instructions.md"
+  },
+  "adapters": [
+    "openai",
+    "anthropic"
+  ],
+  "keywords": [
+    "tenancy",
+    "platform-owner",
+    "governance",
+    "analytics",
+    "authos",
+    "authentication",
+    "sso",
+    "oauth",
+    "oidc",
+    "agent-skills"
+  ],
+  "category": "coding-data"
+}

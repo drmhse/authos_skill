@@ -1,0 +1,31 @@
+{
+  "name": "@ckcreative/authos-compliance-automation",
+  "version": "1.0.0",
+  "description": "Use AuthOS audit, privacy, SIEM, risk, MFA, GDPR export, and anonymization surfaces for compliance workflows.",
+  "type": "workflow",
+  "license": "MIT",
+  "author": {
+    "name": "ckcreative"
+  },
+  "skill": {
+    "instructions": "./instructions.md"
+  },
+  "adapters": [
+    "openai",
+    "anthropic"
+  ],
+  "keywords": [
+    "compliance",
+    "audit",
+    "privacy",
+    "siem",
+    "gdpr",
+    "authos",
+    "authentication",
+    "sso",
+    "oauth",
+    "oidc",
+    "agent-skills"
+  ],
+  "category": "coding-data"
+}

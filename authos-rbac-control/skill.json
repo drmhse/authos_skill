@@ -1,0 +1,31 @@
+{
+  "name": "@ckcreative/authos-rbac-control",
+  "version": "1.0.0",
+  "description": "Manage AuthOS organization members, roles, invitations, SCIM tokens, service access grants, and capability-based permissions.",
+  "type": "workflow",
+  "license": "MIT",
+  "author": {
+    "name": "ckcreative"
+  },
+  "skill": {
+    "instructions": "./instructions.md"
+  },
+  "adapters": [
+    "openai",
+    "anthropic"
+  ],
+  "keywords": [
+    "rbac",
+    "scim",
+    "roles",
+    "permissions",
+    "teams",
+    "authos",
+    "authentication",
+    "sso",
+    "oauth",
+    "oidc",
+    "agent-skills"
+  ],
+  "category": "coding-data"
+}

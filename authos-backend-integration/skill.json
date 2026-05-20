@@ -1,0 +1,31 @@
+{
+  "name": "@ckcreative/authos-backend-integration",
+  "version": "1.0.0",
+  "description": "Secure backend APIs with AuthOS-issued JWTs, JWKS validation, and the AuthOS Node server adapter.",
+  "type": "workflow",
+  "license": "MIT",
+  "author": {
+    "name": "ckcreative"
+  },
+  "skill": {
+    "instructions": "./instructions.md"
+  },
+  "adapters": [
+    "openai",
+    "anthropic"
+  ],
+  "keywords": [
+    "jwt",
+    "jwks",
+    "backend",
+    "express",
+    "api",
+    "authos",
+    "authentication",
+    "sso",
+    "oauth",
+    "oidc",
+    "agent-skills"
+  ],
+  "category": "coding-data"
+}

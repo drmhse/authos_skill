@@ -1,0 +1,31 @@
+{
+  "name": "@ckcreative/authos-identity-configuration",
+  "version": "1.0.0",
+  "description": "Configure AuthOS tenant identity settings including OAuth credentials, enterprise providers, domains, SAML, MFA, and passkeys.",
+  "type": "workflow",
+  "license": "MIT",
+  "author": {
+    "name": "ckcreative"
+  },
+  "skill": {
+    "instructions": "./instructions.md"
+  },
+  "adapters": [
+    "openai",
+    "anthropic"
+  ],
+  "keywords": [
+    "identity",
+    "saml",
+    "passkeys",
+    "mfa",
+    "tenant",
+    "authos",
+    "authentication",
+    "sso",
+    "oauth",
+    "oidc",
+    "agent-skills"
+  ],
+  "category": "coding-data"
+}

@@ -166,6 +166,32 @@ curl -fsSL https://skillvault.md/api/packages/ckcreative/authos-skill | jq '.nam
 curl -fsSL https://skillvault.md/api/packages/ckcreative/authos-skill/download -o authos-skill.zip
 ```
 
+## skills.sh Tracking
+
+skills.sh tracks GitHub-hosted skills through anonymous aggregate telemetry from the `skills` CLI. There is no separate upload step.
+
+Tracked listing:
+
+- `https://skills.sh/drmhse/authos_skill`
+
+Install and track:
+
+```bash
+npx skills add drmhse/authos_skill --all
+```
+
+Verify discovery without installing:
+
+```bash
+npx skills add drmhse/authos_skill --list
+```
+
+Add the badge to public surfaces:
+
+```markdown
+[![skills.sh](https://skills.sh/b/drmhse/authos_skill)](https://skills.sh/drmhse/authos_skill)
+```
+
 ## Directory Submission Checklist
 
 Submit the GitHub repo URL anywhere Agent Skills are indexed. Use this copy:

@@ -1,5 +1,7 @@
 # AuthOS Skills
 
+[![skills.sh](https://skills.sh/b/drmhse/authos_skill)](https://skills.sh/drmhse/authos_skill)
+
 Source-verified Agent Skills for working with AuthOS. These skills were rewritten from the actual AuthOS source code, not from project docs, and target the current public package names and API surfaces.
 
 Canonical repository: [github.com/drmhse/authos_skill](https://github.com/drmhse/authos_skill)
@@ -15,6 +17,7 @@ Registry links:
 
 - Skill Vault package: [skillvault.md/ckcreative/authos-skill](https://skillvault.md/ckcreative/authos-skill)
 - PolySkill namespace: [polyskill.ai/browse?author=ckcreative](https://polyskill.ai/browse?author=ckcreative)
+- skills.sh listing: [skills.sh/drmhse/authos_skill](https://skills.sh/drmhse/authos_skill)
 
 AuthOS package names used by these skills:
 
@@ -70,6 +73,12 @@ Clone the canonical repo first:
 git clone https://github.com/drmhse/authos_skill.git ~/authos_skill
 ```
 
+Or install through the skills.sh CLI, which also contributes anonymous aggregate install telemetry to the skills.sh leaderboard:
+
+```bash
+npx skills add drmhse/authos_skill --all
+```
+
 Install all AuthOS skills by copying the `authos-*` skill directories into the target agent's skills directory:
 
 ```bash
@@ -116,6 +125,7 @@ Before publishing or announcing this repository:
 - Link this repo from both AuthOS public websites: the main AuthOS site and the AuthOS docs site.
 - Import this repository into PolySkill as `authos-skill` in the `security` category after the public `LICENSE` file is visible on GitHub.
 - Publish this repository to Skill Vault as `ckcreative/authos-skill` in the `security` category.
+- Track installs on skills.sh with `npx skills add drmhse/authos_skill --all`.
 - Publish the skills to a shared or public agentregistry instance as Git-backed skill references only when you have its registry URL and token; the local `localhost:12121` daemon is not public distribution.
 
 See [PUBLISHING.md](./PUBLISHING.md) for the full release and directory-submission checklist.

@@ -2,7 +2,7 @@
 
 This repository is the canonical public source for AuthOS Agent Skills:
 
-https://github.com/CkCreative/authos_skill
+https://github.com/drmhse/authos_skill
 
 The skills are source-verified against the AuthOS codebase and organized as portable Agent Skills: one directory per skill, required `SKILL.md`, optional `scripts/`, `references/`, and `assets/`, plus `agents/openai.yaml` metadata where present.
 
@@ -33,7 +33,7 @@ Also confirm:
 Install all skills by cloning the repo and copying every `authos-*` directory into the target skills directory:
 
 ```bash
-git clone https://github.com/CkCreative/authos_skill.git ~/authos_skill
+git clone https://github.com/drmhse/authos_skill.git ~/authos_skill
 ```
 
 | Agent | Project-level path | Personal path |

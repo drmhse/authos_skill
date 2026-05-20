@@ -2,7 +2,7 @@
 
 Source-verified Agent Skills for working with AuthOS. These skills were rewritten from the actual AuthOS source code, not from project docs, and target the current public package names and API surfaces.
 
-Canonical repository: [github.com/CkCreative/authos_skill](https://github.com/CkCreative/authos_skill)
+Canonical repository: [github.com/drmhse/authos_skill](https://github.com/drmhse/authos_skill)
 
 Public AuthOS links:
 
@@ -62,7 +62,7 @@ Only `SKILL.md` is required. The optional directories are included when a skill 
 Clone the canonical repo first:
 
 ```bash
-git clone https://github.com/CkCreative/authos_skill.git ~/authos_skill
+git clone https://github.com/drmhse/authos_skill.git ~/authos_skill
 ```
 
 Install all AuthOS skills by copying the `authos-*` skill directories into the target agent's skills directory:

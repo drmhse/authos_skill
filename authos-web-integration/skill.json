@@ -1,6 +1,6 @@
 {
   "name": "@ckcreative/authos-web-integration",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Integrate AuthOS into browser, React, Vue, or TypeScript apps using the AuthOS SDK and React/Vue adapters.",
   "type": "workflow",
   "license": "MIT",
